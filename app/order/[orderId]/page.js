@@ -53,6 +53,7 @@ export default function OrderTrackingPage({ params }) {
       <div className="bg-white px-6 py-5 border-b border-gray-100">
         <p style={{ fontFamily: 'DM Sans, sans-serif' }} className="text-gray-400 text-xs font-medium uppercase tracking-wider mb-1">Order Tracking</p>
         <h1 style={{ fontFamily: 'Playfair Display, serif' }} className="text-gray-900 text-xl font-bold">Hey, {order.customerName}!</h1>
+        <div className="mt-2 inline-block px-4 py-1.5 rounded-full text-sm font-bold text-white" style={{ background: 'linear-gradient(135deg, #ff6b35, #f7931e)' }}>Token #{order.tokenNumber}</div>
       </div>
 
       <div className="max-w-md mx-auto px-6 py-8" style={{ fontFamily: 'DM Sans, sans-serif' }}>

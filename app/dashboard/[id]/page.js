@@ -150,7 +150,7 @@ export default function DashboardPage({ params }) {
                   {activeOrders.map(order => (
                     <div key={order._id} className="bg-white p-5 rounded-2xl border border-gray-100" style={{ fontFamily: 'DM Sans, sans-serif' }}>
                       <div className="flex justify-between items-center mb-2">
-                        <p className="text-gray-900 font-semibold">{order.customerName}</p>
+                        <p className="text-gray-900 font-semibold">#{order.tokenNumber} — {order.customerName}</p>
                         <span className={`px-3 py-1 rounded-full text-xs font-bold text-white ${
                           order.status === 'pending' ? 'bg-yellow-500' :
                           order.status === 'preparing' ? 'bg-blue-500' : 'bg-green-500'
@@ -191,7 +191,7 @@ export default function DashboardPage({ params }) {
                   {pastOrders.map(order => (
                     <div key={order._id} className="bg-white p-4 rounded-2xl border border-gray-100 opacity-60" style={{ fontFamily: 'DM Sans, sans-serif' }}>
                       <div className="flex justify-between items-center mb-1">
-                        <p className="text-gray-900 font-medium">{order.customerName}</p>
+                        <p className="text-gray-900 font-medium">#{order.tokenNumber} — {order.customerName}</p>
                         <span className="text-gray-400 text-xs">Collected</span>
                       </div>
                       {order.items.map((item, i) => (
