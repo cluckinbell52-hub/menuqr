@@ -2,6 +2,7 @@
 import { useState, useEffect, use } from 'react'
 
 export default function OrderTrackingPage({ params }) {
+  const [vendor, setVendor] = useState(null)
   const { orderId } = use(params)
   const [order, setOrder] = useState(null)
 
@@ -11,10 +12,15 @@ export default function OrderTrackingPage({ params }) {
     return () => clearInterval(interval)
   }, [])
 
-  async function fetchOrder() {
+async function fetchOrder() {
     const res = await fetch(`/api/orders/${orderId}`)
     const data = await res.json()
     setOrder(data)
+    if (data.vendorId) {
+      const vRes = await fetch(`/api/vendors/${data.vendorId}/menu`)
+      const vData = await vRes.json()
+      setVendor(vData.vendor)
+    }
   }
 
   const [showFeedbackInput, setShowFeedbackInput] = useState(false)
@@ -32,7 +38,50 @@ export default function OrderTrackingPage({ params }) {
     })
     fetchOrder()
   }
-
+function downloadReceipt() {
+    const receiptWindow = window.open('', '_blank')
+    receiptWindow.document.write(`
+      <html>
+      <head>
+        <title>Receipt - Token #${order.tokenNumber}</title>
+        <style>
+          body { font-family: 'Courier New', monospace; max-width: 350px; margin: 20px auto; padding: 20px; }
+          .center { text-align: center; }
+          .line { border-top: 1px dashed #000; margin: 10px 0; }
+          .row { display: flex; justify-content: space-between; margin: 4px 0; }
+          .bold { font-weight: bold; }
+          .small { font-size: 12px; color: #666; }
+          @media print { button { display: none; } }
+        </style>
+      </head>
+      <body>
+        <div class="center">
+          <h2 style="margin:0">${vendor?.name || 'Food Truck'}</h2>
+          <p class="small">${vendor?.cuisine || ''}</p>
+        </div>
+        <div class="line"></div>
+        <div class="row"><span class="bold">Token</span><span>#${order.tokenNumber}</span></div>
+        <div class="row"><span class="bold">Date</span><span>${new Date(order.createdAt).toLocaleDateString('en-IN')}</span></div>
+        <div class="row"><span class="bold">Time</span><span>${new Date(order.createdAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}</span></div>
+        <div class="row"><span class="bold">Customer</span><span>${order.customerName}</span></div>
+        <div class="line"></div>
+        ${order.items.map(item => `
+          <div class="row">
+            <span>${item.name} x${item.qty}</span>
+            <span>₹${item.price * item.qty}</span>
+          </div>
+        `).join('')}
+        <div class="line"></div>
+        <div class="row bold" style="font-size:18px"><span>Total</span><span>₹${order.total}</span></div>
+        <div class="line"></div>
+        <p class="center small">Thank you for ordering!</p>
+        <p class="center small">Powered by MenuQR</p>
+        <br>
+        <button onclick="window.print()" style="width:100%;padding:10px;background:#ff6b35;color:white;border:none;border-radius:8px;font-size:14px;cursor:pointer;">Print / Save as PDF</button>
+      </body>
+      </html>
+    `)
+  }
   if (!order) return (
     <div className="min-h-screen bg-[#faf7f2] flex items-center justify-center">
       <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -114,6 +163,13 @@ export default function OrderTrackingPage({ params }) {
             <span className="font-bold" style={{ color: '#ff6b35' }}>₹{order.total}</span>
           </div>
         </div>
+        <button
+          onClick={downloadReceipt}
+          className="w-full mt-3 bg-white border border-gray-100 rounded-2xl p-4 text-center shadow-sm"
+          style={{ fontFamily: 'DM Sans, sans-serif' }}
+        >
+          <span className="text-gray-900 font-semibold text-sm">🧾 Download Receipt</span>
+        </button>
 
         {/* Auto refresh indicator */}
         {currentStep < 3 && (
