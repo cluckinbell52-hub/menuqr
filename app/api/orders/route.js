@@ -18,15 +18,16 @@ export async function POST(req) {
 
     // Reduce stock for each item
     for (const item of body.items) {
-      await MenuItem.updateOne(
-        { vendorId: body.vendorId, name: item.name, stock: { $gt: 0 } },
-        { $inc: { stock: -item.qty } }
-      )
-      // Auto mark sold out if stock hits 0
-      await MenuItem.updateOne(
-        { vendorId: body.vendorId, name: item.name, stock: 0 },
-        { isAvailable: false }
-      )
+      if (item.itemId) {
+        await MenuItem.updateOne(
+          { _id: item.itemId, stock: { $gt: 0 } },
+          { $inc: { stock: -item.qty } }
+        )
+        await MenuItem.updateOne(
+          { _id: item.itemId, stock: 0 },
+          { $set: { isAvailable: false } }
+        )
+      }
     }
 
     return Response.json(order)
