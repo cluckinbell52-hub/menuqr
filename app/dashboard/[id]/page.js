@@ -61,7 +61,10 @@ export default function DashboardPage({ params }) {
             <h1 style={{ fontFamily: 'Playfair Display, serif' }} className="text-gray-900 text-xl font-bold">{vendor.name}</h1>
             <p style={{ fontFamily: 'DM Sans, sans-serif' }} className="text-gray-400 text-sm">{vendor.cuisine}</p>
           </div>
-          <a href={`/dashboard/${id}/revenue`} className="text-orange-500 text-sm font-medium px-4 py-2 bg-orange-50 rounded-xl" style={{ fontFamily: 'DM Sans, sans-serif' }}>📊 Revenue</a>
+          <div className="flex gap-2">
+         <a href={`/kitchen/${id}`} className="text-green-600 text-sm font-medium px-4 py-2 bg-green-50 rounded-xl" style={{ fontFamily: 'DM Sans, sans-serif' }}>👨‍🍳 Kitchen</a>
+         <a href={`/dashboard/${id}/revenue`} className="text-orange-500 text-sm font-medium px-4 py-2 bg-orange-50 rounded-xl" style={{ fontFamily: 'DM Sans, sans-serif' }}>📊 Revenue</a>
+        </div>
         </div>
       </div>
 
