@@ -10,11 +10,15 @@ export default function DashboardPage({ params }) {
   const [form, setForm] = useState({ name: '', price: '', category: '', description: '' })
   const [tab, setTab] = useState('menu')
 
-  useEffect(() => {
+    useEffect(() => {
     fetchMenu()
     fetchOrders()
-    const interval = setInterval(fetchOrders, 5000)
-    return () => clearInterval(interval)
+    const ordersInterval = setInterval(fetchOrders, 5000)
+    const menuInterval = setInterval(fetchMenu, 10000)
+    return () => {
+      clearInterval(ordersInterval)
+      clearInterval(menuInterval)
+    }
   }, [])
 
   async function fetchMenu() {
