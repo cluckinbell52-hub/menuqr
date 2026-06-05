@@ -111,7 +111,10 @@ export default function DashboardPage({ params }) {
                 <div key={item._id} className="bg-white p-4 rounded-2xl border border-gray-100 flex justify-between items-center">
                   <div>
                     <p className={`font-medium ${item.isAvailable ? 'text-gray-900' : 'text-gray-400 line-through'}`} style={{ fontFamily: 'DM Sans, sans-serif' }}>{item.name}</p>
-                    <p className="text-gray-400 text-xs" style={{ fontFamily: 'DM Sans, sans-serif' }}>{item.category}</p>
+<p className="text-gray-400 text-xs" style={{ fontFamily: 'DM Sans, sans-serif' }}>{item.category}</p>
+{item.stock !== null && item.stock !== undefined && item.stock <= 5 && (
+  <span style={{ fontFamily: 'DM Sans, sans-serif' }} className="text-xs font-bold text-red-500 bg-red-50 px-2 py-0.5 rounded-full">⚠️ Only {item.stock} left</span>
+)}
                   </div>
                   <div className="flex items-center gap-3">
                     <p className="text-orange-500 font-bold" style={{ fontFamily: 'DM Sans, sans-serif' }}>₹{item.price}</p>

@@ -20,6 +20,11 @@ export default function TruckPage({ params }) {
     function addToCart(item) {
     const itemId = item._id?.toString() || item._id
     const exists = cart.find(c => c._id === itemId)
+    const currentQty = exists ? exists.qty : 0
+    if (item.stock !== null && item.stock !== undefined && currentQty >= item.stock) {
+      alert(`Only ${item.stock} left in stock!`)
+      return
+    }
     if (exists) {
       setCart(cart.map(c => c._id === itemId ? { ...c, qty: c.qty + 1 } : c))
     } else {
@@ -31,7 +36,9 @@ export default function TruckPage({ params }) {
     setCart(cart.map(c => {
       if (c._id === itemId) {
         const newQty = c.qty + delta
-        return newQty <= 0 ? null : { ...c, qty: newQty }
+        if (newQty <= 0) return null
+        if (c.stock !== null && c.stock !== undefined && newQty > c.stock) return c
+        return { ...c, qty: newQty }
       }
       return c
     }).filter(Boolean))
@@ -117,6 +124,10 @@ export default function TruckPage({ params }) {
                           <button onClick={() => updateQty(item._id, 1)} className="w-8 h-8 rounded-full text-white flex items-center justify-center font-bold text-sm" style={{ background: 'linear-gradient(135deg, #ff6b35, #f7931e)' }}>+</button>
                         </div>
                       ) : (
+                        <div className="flex flex-col items-end gap-1">
+                        {item.stock !== null && item.stock !== undefined && item.stock <= 5 && (
+                          <span style={{ fontFamily: 'DM Sans, sans-serif' }} className="text-red-500 text-xs font-semibold">Only {item.stock} left!</span>
+                        )}
                         <button
                           onClick={() => addToCart(item)}
                           className="px-5 py-2 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-700 hover:border-orange-400 hover:text-orange-500 transition-colors"
@@ -124,6 +135,7 @@ export default function TruckPage({ params }) {
                         >
                           Add
                         </button>
+                      </div>
                       )}
                     </div>
                   )
@@ -149,13 +161,18 @@ export default function TruckPage({ params }) {
                       <button onClick={() => updateQty(item._id, 1)} className="w-8 h-8 rounded-full text-white flex items-center justify-center font-bold text-sm" style={{ background: 'linear-gradient(135deg, #ff6b35, #f7931e)' }}>+</button>
                     </div>
                   ) : (
-                    <button
-                      onClick={() => addToCart(item)}
-                      className="px-5 py-2 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-700 hover:border-orange-400 hover:text-orange-500 transition-colors"
-                      style={{ fontFamily: 'DM Sans, sans-serif' }}
-                    >
-                      Add
-                    </button>
+          <div className="flex flex-col items-end gap-1">
+            {item.stock !== null && item.stock !== undefined && item.stock <= 5 && (
+              <span style={{ fontFamily: 'DM Sans, sans-serif' }} className="text-red-500 text-xs font-semibold">Only {item.stock} left!</span>
+            )}
+            <button
+              onClick={() => addToCart(item)}
+              className="px-5 py-2 rounded-xl text-sm font-semibold border-2 border-gray-200 text-gray-700 hover:border-orange-400 hover:text-orange-500 transition-colors"
+              style={{ fontFamily: 'DM Sans, sans-serif' }}
+            >
+              Add
+            </button>
+          </div>
                   )}
                 </div>
               )
