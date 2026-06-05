@@ -129,8 +129,9 @@ export default function DashboardPage({ params }) {
                       <input
                         type="number"
                         placeholder="∞"
-                        value={item.stock ?? ''}
-                        onChange={async (e) => {
+                        defaultValue={item.stock ?? ''}
+                        key={item._id}
+                        onBlur={async (e) => {
                           const stock = e.target.value === '' ? null : Number(e.target.value)
                           await fetch(`/api/menu/${item._id}`, {
                             method: 'PATCH',
