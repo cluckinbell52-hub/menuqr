@@ -79,14 +79,16 @@ export default function KitchenPage({ params }) {
       {ready.length > 0 && (
         <div className="mb-6">
           <p style={{ fontFamily: 'DM Sans, sans-serif' }} className="text-green-400 text-xs font-bold uppercase tracking-widest mb-3">Ready for Pickup ({ready.length})</p>
-          <div className="space-y-3 opacity-60">
+          <div className="space-y-3">
             {ready.map(order => (
-              <div key={order._id} className="bg-gray-900 rounded-2xl p-4 border border-green-500/30">
-                <div className="flex justify-between items-center">
-                  <p style={{ fontFamily: 'DM Sans, sans-serif' }} className="text-green-400 font-black text-2xl">#{order.tokenNumber}</p>
-                  <span style={{ fontFamily: 'DM Sans, sans-serif' }} className="text-green-400 text-sm font-semibold">Waiting for pickup</span>
-                </div>
-              </div>
+              <OrderCard key={order._id} order={order} onAction={async (orderId) => {
+                await fetch(`/api/orders/${orderId}`, {
+                  method: 'PATCH',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ status: 'collected' }),
+                })
+                fetchOrders()
+              }} actionLabel="Mark Collected ✓" actionColor="#6366f1" />
             ))}
           </div>
         </div>
