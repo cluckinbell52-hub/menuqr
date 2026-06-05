@@ -16,17 +16,21 @@ export async function POST(req) {
 
     const order = await Order.create(body)
 
-    // Reduce stock for each item
+// Reduce stock for each item
     for (const item of body.items) {
+      console.log('Processing item:', item)
       if (item.itemId) {
-        await MenuItem.updateOne(
+        const updated = await MenuItem.updateOne(
           { _id: item.itemId, stock: { $gt: 0 } },
           { $inc: { stock: -item.qty } }
         )
+        console.log('Stock update result:', updated)
         await MenuItem.updateOne(
           { _id: item.itemId, stock: 0 },
           { $set: { isAvailable: false } }
         )
+      } else {
+        console.log('No itemId found for:', item.name)
       }
     }
 

@@ -6,7 +6,7 @@ export async function PATCH(req, { params }) {
     await connectDB()
     const { itemId } = await params
     const body = await req.json()
-    const item = await MenuItem.findByIdAndUpdate(itemId, body, { new: true })
+    const item = await MenuItem.findByIdAndUpdate(itemId, { $set: body }, { new: true })
     return Response.json(item)
   } catch (err) {
     return Response.json({ error: err.message }, { status: 500 })

@@ -17,12 +17,13 @@ export default function TruckPage({ params }) {
       })
   }, [id])
 
-  function addToCart(item) {
-    const exists = cart.find(c => c._id === item._id)
+    function addToCart(item) {
+    const itemId = item._id?.toString() || item._id
+    const exists = cart.find(c => c._id === itemId)
     if (exists) {
-      setCart(cart.map(c => c._id === item._id ? { ...c, qty: c.qty + 1 } : c))
+      setCart(cart.map(c => c._id === itemId ? { ...c, qty: c.qty + 1 } : c))
     } else {
-      setCart([...cart, { ...item, qty: 1 }])
+      setCart([...cart, { ...item, _id: itemId, qty: 1 }])
     }
   }
 
@@ -54,7 +55,7 @@ export default function TruckPage({ params }) {
       body: JSON.stringify({
         vendorId: id,
         customerName: customerName,
-        items: cart.map(c => ({ name: c.name, price: c.price, qty: c.qty })),
+        items: cart.map(c => ({ itemId: c._id?.toString(), name: c.name, price: c.price, qty: c.qty })),
         total,
       }),
     })
