@@ -125,6 +125,26 @@ export default function DashboardPage({ params }) {
                     >
                       {item.isAvailable ? 'Available' : 'Sold Out'}
                     </button>
+                    <div className="flex items-center gap-1">
+                      <input
+                        type="number"
+                        placeholder="∞"
+                        value={item.stock ?? ''}
+                        onChange={async (e) => {
+                          const stock = e.target.value === '' ? null : Number(e.target.value)
+                          await fetch(`/api/menu/${item._id}`, {
+                            method: 'PATCH',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ stock, isAvailable: stock === null || stock > 0 }),
+                          })
+                          fetchMenu()
+                        }}
+                        className="w-14 bg-gray-100 text-gray-900 rounded-lg p-1.5 text-xs outline-none text-center"
+                        style={{ fontFamily: 'DM Sans, sans-serif' }}
+                        min="0"
+                      />
+                      <span className="text-gray-300 text-xs">left</span>
+                    </div>
                     <button
                       onClick={async () => {
                         await fetch(`/api/menu/${item._id}`, { method: 'DELETE' })
