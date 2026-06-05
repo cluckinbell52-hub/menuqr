@@ -50,7 +50,10 @@ export default function TruckPage({ params }) {
 
   const [showNameInput, setShowNameInput] = useState(false)
   const [customerName, setCustomerName] = useState('')
+  const [ordering, setOrdering] = useState(false)
 
+  if (ordering) return
+    setOrdering(true)
   async function placeOrder() {
     if (!customerName) {
       setShowNameInput(true)
@@ -68,6 +71,7 @@ export default function TruckPage({ params }) {
     })
     const data = await res.json()
     window.location.href = `/order/${data._id}`
+    setOrdering(false)
   }
 
   if (!vendor) return (
@@ -257,9 +261,10 @@ export default function TruckPage({ params }) {
               <button
                 onClick={placeOrder}
                 className="w-full py-4 rounded-2xl text-white font-bold text-base shadow-lg shadow-orange-500/20"
-                style={{ background: 'linear-gradient(135deg, #ff6b35, #f7931e)' }}
+                style={{ background: ordering ? '#ccc' : 'linear-gradient(135deg, #ff6b35, #f7931e)' }}
+                disabled={ordering}
               >
-                {showNameInput ? 'Confirm Order' : 'Place Order'}
+                {ordering ? 'Placing Order...' : showNameInput ? 'Confirm Order' : 'Place Order'}
               </button>
             </div>
           </div>
