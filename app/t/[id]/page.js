@@ -52,11 +52,13 @@ export default function TruckPage({ params }) {
   const [customerName, setCustomerName] = useState('')
   const [ordering, setOrdering] = useState(false)
 
-  if (ordering) return
-    setOrdering(true)
+  
   async function placeOrder() {
+    if (ordering) return
+    setOrdering(true)
     if (!customerName) {
       setShowNameInput(true)
+      setOrdering(false) 
       return
     }
     const res = await fetch('/api/orders', {
