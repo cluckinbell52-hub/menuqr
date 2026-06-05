@@ -41,43 +41,87 @@ async function fetchOrder() {
 function downloadReceipt() {
     const receiptWindow = window.open('', '_blank')
     receiptWindow.document.write(`
+      <!DOCTYPE html>
       <html>
       <head>
         <title>Receipt - Token #${order.tokenNumber}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
         <style>
-          body { font-family: 'Courier New', monospace; max-width: 350px; margin: 20px auto; padding: 20px; }
-          .center { text-align: center; }
-          .line { border-top: 1px dashed #000; margin: 10px 0; }
-          .row { display: flex; justify-content: space-between; margin: 4px 0; }
-          .bold { font-weight: bold; }
-          .small { font-size: 12px; color: #666; }
-          @media print { button { display: none; } }
+          * { margin: 0; padding: 0; box-sizing: border-box; }
+          body { font-family: 'DM Sans', sans-serif; background: #faf7f2; min-height: 100vh; padding: 20px; }
+          .card { background: white; border-radius: 20px; overflow: hidden; max-width: 380px; margin: 0 auto; border: 1px solid #f0ece4; }
+          .header { background: #ff6b35; padding: 24px 20px; text-align: center; }
+          .header .label { font-size: 11px; color: rgba(255,255,255,0.7); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 4px; }
+          .header .name { font-size: 22px; font-weight: 600; color: white; margin-bottom: 2px; }
+          .header .cuisine { font-size: 13px; color: rgba(255,255,255,0.75); margin-bottom: 14px; }
+          .token { display: inline-block; background: rgba(255,255,255,0.2); padding: 6px 18px; border-radius: 20px; color: white; font-size: 14px; font-weight: 500; }
+          .body { padding: 20px; }
+          .meta { background: #faf7f2; border-radius: 12px; padding: 14px; margin-bottom: 16px; }
+          .meta-row { display: flex; justify-content: space-between; padding: 5px 0; }
+          .meta-row:not(:last-child) { border-bottom: 1px solid #f0ece4; }
+          .meta-label { font-size: 13px; color: #9ca3af; }
+          .meta-value { font-size: 13px; font-weight: 500; color: #111827; }
+          .section-title { font-size: 11px; font-weight: 500; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; }
+          .item-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #faf7f2; }
+          .item-left { display: flex; align-items: center; gap: 8px; }
+          .item-qty { background: #ff6b35; color: white; font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 12px; }
+          .item-name { font-size: 14px; color: #111827; }
+          .item-price { font-size: 14px; font-weight: 500; color: #111827; }
+          .total-row { display: flex; justify-content: space-between; align-items: center; background: #faf7f2; border-radius: 12px; padding: 14px; margin-top: 14px; }
+          .total-label { font-size: 17px; font-weight: 500; color: #111827; }
+          .total-value { font-size: 20px; font-weight: 600; color: #ff6b35; }
+          .footer { text-align: center; margin-top: 16px; padding-top: 14px; border-top: 1px solid #f0ece4; }
+          .footer p { font-size: 12px; color: #9ca3af; margin-bottom: 3px; }
+          .footer .brand { font-size: 12px; color: #ff6b35; font-weight: 500; }
+          .print-btn { display: block; width: 100%; margin-top: 16px; background: #ff6b35; color: white; border: none; border-radius: 12px; padding: 13px; font-size: 14px; font-weight: 500; font-family: 'DM Sans', sans-serif; cursor: pointer; }
+          @media print { .print-btn { display: none; } }
         </style>
       </head>
       <body>
-        <div class="center">
-          <h2 style="margin:0">${vendor?.name || 'Food Truck'}</h2>
-          <p class="small">${vendor?.cuisine || ''}</p>
-        </div>
-        <div class="line"></div>
-        <div class="row"><span class="bold">Token</span><span>#${order.tokenNumber}</span></div>
-        <div class="row"><span class="bold">Date</span><span>${new Date(order.createdAt).toLocaleDateString('en-IN')}</span></div>
-        <div class="row"><span class="bold">Time</span><span>${new Date(order.createdAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}</span></div>
-        <div class="row"><span class="bold">Customer</span><span>${order.customerName}</span></div>
-        <div class="line"></div>
-        ${order.items.map(item => `
-          <div class="row">
-            <span>${item.name} x${item.qty}</span>
-            <span>₹${item.price * item.qty}</span>
+        <div class="card">
+          <div class="header">
+            <p class="label">food truck</p>
+            <p class="name">${vendor?.name || 'Food Truck'}</p>
+            <p class="cuisine">${vendor?.cuisine || ''}</p>
+            <div class="token">Token #${order.tokenNumber}</div>
           </div>
-        `).join('')}
-        <div class="line"></div>
-        <div class="row bold" style="font-size:18px"><span>Total</span><span>₹${order.total}</span></div>
-        <div class="line"></div>
-        <p class="center small">Thank you for ordering!</p>
-        <p class="center small">Powered by MenuQR</p>
-        <br>
-        <button onclick="window.print()" style="width:100%;padding:10px;background:#ff6b35;color:white;border:none;border-radius:8px;font-size:14px;cursor:pointer;">Print / Save as PDF</button>
+          <div class="body">
+            <div class="meta">
+              <div class="meta-row">
+                <span class="meta-label">Customer</span>
+                <span class="meta-value">${order.customerName}</span>
+              </div>
+              <div class="meta-row">
+                <span class="meta-label">Date</span>
+                <span class="meta-value">${new Date(order.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+              </div>
+              <div class="meta-row">
+                <span class="meta-label">Time</span>
+                <span class="meta-value">${new Date(order.createdAt).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}</span>
+              </div>
+            </div>
+            <p class="section-title">Order summary</p>
+            ${order.items.map(item => `
+              <div class="item-row">
+                <div class="item-left">
+                  <span class="item-qty">x${item.qty}</span>
+                  <span class="item-name">${item.name}</span>
+                </div>
+                <span class="item-price">₹${item.price * item.qty}</span>
+              </div>
+            `).join('')}
+            <div class="total-row">
+              <span class="total-label">Total</span>
+              <span class="total-value">₹${order.total}</span>
+            </div>
+            <div class="footer">
+              <p>Thank you for ordering!</p>
+              <p class="brand">Powered by MenuQR</p>
+            </div>
+            <button class="print-btn" onclick="window.print()">Save as PDF</button>
+          </div>
+        </div>
       </body>
       </html>
     `)
